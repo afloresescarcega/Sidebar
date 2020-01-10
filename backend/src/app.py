@@ -1,5 +1,6 @@
 #!flask/bin/python
 from flask import Flask, jsonify, Response
+import Reddit_access
 
 app = Flask(__name__)
 
@@ -41,33 +42,6 @@ def get_sidebar_subreddits(subreddit):
     return jsonify({'subreddits': subreddits})
 
 if __name__ == '__main__':
-    # Let there be this file in backend/ with the app token 
-    # https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started
-    with open("../reddit_client_id.txt") as f:
-        REDDIT_CLIENT_ID = f.read().strip()
-    # Let there be this file in backend/ with the app secret
-    # https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started
-    with open("../reddit_secret.txt") as f:
-        REDDIT_SECRET = f.read().strip()
-    with open("../reddit_username.txt") as f:
-        REDDIT_USERNAME = f.read().strip()
-    with open("../reddit_username_password.txt") as f:
-        REDDIT_USERNAME_PASSWORD = f.read().strip()
-
-    if not REDDIT_CLIENT_ID or not REDDIT_SECRET or not REDDIT_USERNAME or not REDDIT_USERNAME_PASSWORD:
-        print("Make sure that you make files, backend/reddit_client_id.txt, backend/reddit_secret.txt, backend/reddit_username.txt, backend/reddit_username_password.txt")
-        raise FileNotFoundError()
-
-    print( REDDIT_CLIENT_ID, REDDIT_SECRET, REDDIT_USERNAME, REDDIT_USERNAME_PASSWORD)
-
-    client_auth = requests.auth.HTTPBasicAuth(REDDIT_CLIENT_ID, REDDIT_SECRET)
-    post_data = {"grant_type": "password", "username": REDDIT_USERNAME, "password": REDDIT_USERNAME_PASSWORD}
-    headers = {"User-Agent": "Sidebar/0.1 by " + REDDIT_USERNAME}
-    response = requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)
-
-    reddit_token = response.json()['access_token']
-    print(response.json())
-    """
-    End of "Get Reddit token"
-    """
+    token_handler = Reddit_access()
+    token = token_handler.get_token()
     app.run(debug=True)
