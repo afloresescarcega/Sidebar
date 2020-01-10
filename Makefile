@@ -1,7 +1,3 @@
-.DEFAULT_GOAL := all
-
-all:
-
 backend:
 	cd backend
 	@echo
