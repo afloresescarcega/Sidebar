@@ -1,4 +1,4 @@
-backend:
+build:
 	cd backend
 	@echo
 	sudo apt install python3-pip
