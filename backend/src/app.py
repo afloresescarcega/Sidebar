@@ -1,6 +1,6 @@
 #!flask/bin/python
 from flask import Flask, jsonify, Response
-import Reddit_access
+from . import Reddit_access
 
 app = Flask(__name__)
 
