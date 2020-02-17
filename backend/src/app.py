@@ -64,4 +64,4 @@ def get_sidebar_subreddits():
 if __name__ == '__main__':
     token_handler = Reddit_access()
     token = token_handler.get_token()
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=80)
