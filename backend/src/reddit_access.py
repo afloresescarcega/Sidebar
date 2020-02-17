@@ -2,6 +2,8 @@ import time
 import os.path
 from os import path
 
+import requests
+
 
 # reddit_token.txt example
 """
@@ -12,29 +14,6 @@ from os import path
 class Reddit_access:
     def __init__(self):
         self.TOKEN_PATH = "../reddit_token.txt"
-            
-    def get_token(self):
-        if path.exists(self.TOKEN_PATH): # if previous token been made
-            print(str(time.time()) + ": found an old token")
-            with open(self.TOKEN_PATH, "r") as f:
-                old_token = [i for i in f]
-            if float(old_token[0]) < time.time(): # If old token is expired make new one
-                print(str(time.time()) + ": found an old token expired token")
-                new_token = str(time.time() + 3600) + "\n"
-                new_token += get_new_token()
-                with open(self.TOKEN_PATH, "w+") as f:
-                    f.write(new_token)
-                return new_token
-            else: # Old token is still good
-                print(str(time.time()) + ": found an old token that still works")
-                return old_token[1]
-
-        else:
-            print(str(time.time()) + ": found no old token")
-            with open(self.TOKEN_PATH, "w+") as f:
-                new_token = str(time.time() + 3600) + "\n" + get_new_token()
-                f.write(new_token)
-            return new_token
 
     def get_new_token(self):
         # Let there be this file in backend/ with the app token 
@@ -58,8 +37,40 @@ class Reddit_access:
 
         client_auth = requests.auth.HTTPBasicAuth(REDDIT_CLIENT_ID, REDDIT_SECRET)
         post_data = {"grant_type": "password", "username": REDDIT_USERNAME, "password": REDDIT_USERNAME_PASSWORD}
-        headers = {"User-Agent": "Sidebar/0.1 by " + REDDIT_USERNAME}
-        response = requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)
-
+        headers = {"User-Agent": "Sidebar by heliopphobicdude"}
+        # response = requests.post("https://www.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)
+        response = requests.post("https://ssl.reddit.com/api/v1/access_token", auth=client_auth, data=post_data, headers=headers)
+        
+        print()
+        print(response.json())
+        print()
         reddit_token = response.json()['access_token']
+        print("I've come up with this token!", reddit_token)
         return reddit_token
+            
+    def get_token(self):
+        if path.exists(self.TOKEN_PATH): # if previous token been made
+            print(str(time.time()) + ": found an old token")
+            with open(self.TOKEN_PATH, "r") as f:
+                old_token = [i for i in f]
+                print("This is old token", old_token)
+            if float(old_token[0]) < time.time(): # If old token is expired make new one
+                print(str(time.time()) + ": found an old token expired token")
+                new_token = str(time.time() + 3600) + "\n"
+                new_token += self.get_new_token()
+                with open(self.TOKEN_PATH, "w+") as f:
+                    f.write(new_token)
+                return new_token
+            else: # Old token is still good
+                print(str(time.time()) + ": found an old token that still works")
+                return old_token[1]
+
+        else:
+            print(str(time.time()) + ": found no old token")
+            with open(self.TOKEN_PATH, "w+") as f:
+                new_token = str(time.time() + 3600) + "\n" + self.get_new_token()
+                f.write(new_token)
+                print("Writing to new token")
+            return new_token
+
+    
