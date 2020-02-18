@@ -4,3 +4,5 @@ sidebar.pem
 reddit_username_password.txt
 reddit_username.txt
 node_modules/
+backend/reddit_token.txt
+backend/src/__pycache__/
