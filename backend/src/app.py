@@ -28,7 +28,7 @@ REDDIT_USERNAME_PASSWORD = None
 
 
 
-@app.route('/sidebar/api/v1.0/tasks', methods=['GET'])
+@app.route('/sidebar/api/v1.0/search', methods=['GET'])
 def get_sidebar_subreddits():
     """
     Receives a single string of the subreddit.
