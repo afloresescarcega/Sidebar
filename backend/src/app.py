@@ -26,7 +26,7 @@ REDDIT_SECRET = None
 REDDIT_USERNAME = None
 REDDIT_USERNAME_PASSWORD = None
 
-@app.route("/sidebar")
+@app.route("/")
 def index():
     return render_template("index.html", message="Hello Flask!");
 
