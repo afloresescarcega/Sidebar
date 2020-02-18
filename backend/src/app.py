@@ -1,5 +1,5 @@
 #!flask/bin/python
-from flask import Flask, jsonify, Response
+from flask import Flask, jsonify, Response, render_template
 from reddit_access import Reddit_access
 
 app = Flask(__name__)
@@ -26,6 +26,9 @@ REDDIT_SECRET = None
 REDDIT_USERNAME = None
 REDDIT_USERNAME_PASSWORD = None
 
+@app.route("/sidebar")
+def index():
+    return render_template("index.html", message="Hello Flask!");
 
 
 @app.route('/sidebar/api/v1.0/search', methods=['GET'])
