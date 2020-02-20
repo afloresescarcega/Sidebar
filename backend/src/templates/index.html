@@ -1,24 +1,92 @@
 <!doctype html>
+<meta charset="utf-8">
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
 <title>{% block title %}{% endblock %} - Flaskr</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
-  <h1>Flaskr</h1>
-  <ul>
-    {% if g.user %}
-      <li><span>{{ g.user['username'] }}</span>
-      <li><a href="{{ url_for('auth.logout') }}">Log Out</a>
-    {% else %}
-      <li><a href="{{ url_for('auth.register') }}">Register</a>
-      <li><a href="{{ url_for('auth.login') }}">Log In</a>
-    {% endif %}
-  </ul>
+  <h1>Sidebar</h1>
 </nav>
-<section class="content">
-  <header>
-    {% block header %}{% endblock %}
-  </header>
-  {% for message in get_flashed_messages() %}
-    <div class="flash">{{ message }}</div>
-  {% endfor %}
-  {% block content %}{% endblock %}
-</section>
+<body>
+  <div id="graph">
+  </div>
+</body>
+<script>
+  // set the dimensions and margins of the graph
+  var margin = {top: 10, right: 30, bottom: 30, left: 40},
+    width = 400 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+  
+  
+  // append the svg object to the body of the page
+  var svg = d3.select("#graph")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+  
+  d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit=movies", function( data) {
+  
+    // Initialize the links
+    var link = svg
+      .selectAll("line")
+      .data(data.links)
+      .enter()
+      .append("line")
+        .style("stroke", "#aaa")
+  
+    // Initialize the nodes
+    var node = svg
+      .selectAll("circle")
+      .data(data.nodes)
+      .enter()
+      .append("circle")
+        .attr("r", 30)
+        .style("fill", "#69b3a2")
+        .text("hello")
+
+    // Add names to all the nodes
+    const textElems = svg.append('g')
+      .selectAll('text')
+      .data(data.nodes)
+      .enter().append('text')
+      .text(d => d.name)
+      .style("font-size", function(d) { return Math.min(2 * 23, (2 * 23 - 8) / this.getComputedTextLength() * 24) + "px"; })
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "central") 
+      .attr('font-size',8);
+      // .attr('dx', -14)//positions text towards the left of the center of the circle
+      // .attr('dy',4);
+  
+    // Let's list the force we wanna apply on the network
+    var simulation = d3.forceSimulation(data.nodes)                 // Force algorithm is applied to data.nodes
+        .force("link", d3.forceLink()                               // This force provides links between nodes
+              .id(function(d) { return d.id; })                     // This provide  the id of a node
+              .links(data.links)                                    // and this the list of links
+        )
+        .force("charge", d3.forceManyBody().strength(-2000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+        .force("center", d3.forceCenter(width / 2, height / 2))     // This force attracts nodes to the center of the svg area
+        .on("end", ticked);
+  
+    // This function is run at each iteration of the force algorithm, updating the nodes position.
+    function ticked() {
+      link
+          .attr("x1", function(d) { return d.source.x; })
+          .attr("y1", function(d) { return d.source.y; })
+          .attr("x2", function(d) { return d.target.x; })
+          .attr("y2", function(d) { return d.target.y; });
+  
+      node
+          .attr("cx", function (d) { return d.x+6; })
+          .attr("cy", function(d) { return d.y-6; });
+      
+      textElems
+          .attr("x", function (d) { return d.x+6; })
+          .attr("y", function(d) { return d.y-6; });
+    }
+  
+  });
+  
+</script>
