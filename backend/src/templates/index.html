@@ -6,6 +6,10 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <nav>
   <h1>Sidebar</h1>
+  <form name="myform" onsubmit="return false">
+    <!-- <input name="search"  type="submit" value="Search" /> -->
+    <input type="text" id="subredditQuery" maxlength="" />
+</form>
 </nav>
 <body>
   <div id="graph">
@@ -27,66 +31,106 @@
     .attr("transform",
           "translate(" + margin.left + "," + margin.top + ")");
   
-  d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit=movies", function( data) {
-  
-    // Initialize the links
-    var link = svg
-      .selectAll("line")
-      .data(data.links)
-      .enter()
-      .append("line")
-        .style("stroke", "#aaa")
-  
-    // Initialize the nodes
-    var node = svg
-      .selectAll("circle")
-      .data(data.nodes)
-      .enter()
-      .append("circle")
-        .attr("r", 30)
-        .style("fill", "#69b3a2")
-        .text("hello")
 
-    // Add names to all the nodes
-    const textElems = svg.append('g')
-      .selectAll('text')
-      .data(data.nodes)
-      .enter().append('text')
-      .text(d => d.name)
-      .style("font-size", function(d) { return Math.min(2 * 23, (2 * 23 - 8) / this.getComputedTextLength() * 24) + "px"; })
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "central") 
-      .attr('font-size',8);
-      // .attr('dx', -14)//positions text towards the left of the center of the circle
-      // .attr('dy',4);
   
-    // Let's list the force we wanna apply on the network
-    var simulation = d3.forceSimulation(data.nodes)                 // Force algorithm is applied to data.nodes
-        .force("link", d3.forceLink()                               // This force provides links between nodes
-              .id(function(d) { return d.id; })                     // This provide  the id of a node
-              .links(data.links)                                    // and this the list of links
-        )
-        .force("charge", d3.forceManyBody().strength(-2000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
-        .force("center", d3.forceCenter(width / 2, height / 2))     // This force attracts nodes to the center of the svg area
-        .on("end", ticked);
+
+  d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit=movies", function(data) {
+    // Initialize the links
   
-    // This function is run at each iteration of the force algorithm, updating the nodes position.
-    function ticked() {
-      link
-          .attr("x1", function(d) { return d.source.x; })
-          .attr("y1", function(d) { return d.source.y; })
-          .attr("x2", function(d) { return d.target.x; })
-          .attr("y2", function(d) { return d.target.y; });
-  
-      node
-          .attr("cx", function (d) { return d.x+6; })
-          .attr("cy", function(d) { return d.y-6; });
+    var draw = function (){
+      console.log("Hello")
+      console.log(data);
+      var link = svg
+        .selectAll("line")
+        .data(data.links)
+        .enter()
+        .append("line")
+          .style("stroke", "#aaa");
+    
+      console.log("This is in draw; nodes: " + data.nodes);
+      // Initialize the nodes
+      var node = svg
+        .selectAll("circle")
+        .data(data.nodes)
+        .enter()
+        .append("circle")
+          .attr("r", 30)
+          .style("fill", "#69b3a2")
+          .text("hello");
+
+      // Add names to all the nodes
+      const textElems = svg.append('g')
+        .selectAll('text')
+        .data(data.nodes)
+        .enter().append('text')
+        .text(d => d.name)
+        .style("font-size", function(d) { return Math.min(2 * 23, (2 * 23 - 8) / this.getComputedTextLength() * 24) + "px"; })
+        .attr("text-anchor", "middle")
+        .attr("dominant-baseline", "central") 
+        .attr('font-size',8);
+        // .attr('dx', -14)//positions text towards the left of the center of the circle
+        // .attr('dy',4);
+    
+      // Let's list the force we wanna apply on the network
+      var simulation = d3.forceSimulation(data.nodes)                 // Force algorithm is applied to data.nodes
+          .force("center", d3.forceCenter(width / 2, height / 2))     // This force attracts nodes to the center of the svg area
+          .force("link", d3.forceLink()                               // This force provides links between nodes
+                .id(function(d) { return d.id; })                     // This provide  the id of a node
+                .links(data.links)                                    // and this the list of links
+          )
+          .force("charge", d3.forceManyBody().strength(-2000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+          .on("tick", ticked);
+    
+      // This function is run at each iteration of the force algorithm, updating the nodes position.
+      function ticked() {
+        link
+            .attr("x1", function(d) { return d.source.x; })
+            .attr("y1", function(d) { return d.source.y; })
+            .attr("x2", function(d) { return d.target.x; })
+            .attr("y2", function(d) { return d.target.y; });
+    
+        node
+            .attr("cx", function (d) { return d.x+6; })
+            .attr("cy", function(d) { return d.y-6; });
+        
+        textElems
+            .attr("x", function (d) { return d.x+6; })
+            .attr("y", function(d) { return d.y-6; });
+      };
+    };
+    draw();
+    d3.select("nav").select("form")
+      .on("submit", function(){
+        console.log(data.links.length)
+        console.log(data.nodes.length)
+        svg.selectAll("circle").data(data, function(d){return d.name;}).exit().remove()
+        svg.selectAll("line").data(data, function(d){return d.id;}).exit().remove()
+        svg.selectAll("text").data(data, function(d){return d.id;}).exit().remove()
+        data.links = []
+        data.nodes = []
+        console.log("Getting rid of circles and links")
+        console.log(data.links.length)
+        console.log(data.nodes.length)
+
+        // Get the data again
+        console.log("http://0.0.0.0/sidebar/api/v1.0/search?subreddit="+document.getElementById("subredditQuery").value);
+        d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit="+document.getElementById("subredditQuery").value, function(temp_data) {
+          temp_data.nodes.forEach(function(node) {
+              console.log("node" + node.id);
+              console.log("New length of nodes " + data.nodes.push(node));
+          });
+          temp_data.links.forEach(function(link) {
+              console.log(link);
+              console.log("New length of links " + data.links.push(link));
+          });
+          console.log(data.links);
+          console.log(data.nodes);
+        });
+        draw();
+      });
       
-      textElems
-          .attr("x", function (d) { return d.x+6; })
-          .attr("y", function(d) { return d.y-6; });
-    }
-  
   });
+  
+
   
 </script>
