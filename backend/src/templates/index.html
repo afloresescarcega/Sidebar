@@ -18,14 +18,16 @@
 <script>
   // set the dimensions and margins of the graph
   var margin = {top: 10, right: 30, bottom: 30, left: 40},
-    width = 400 - margin.left - margin.right,
-    height = 400 - margin.top - margin.bottom;
+    width = 800 - margin.left - margin.right,
+    height = 800 - margin.top - margin.bottom;
   
   
   // append the svg object to the body of the page
   var svg = d3.select("#graph")
   .append("svg")
-    .attr("width", width + margin.left + margin.right)
+    // .attr("width", width + margin.left + margin.right)
+    .attr("width", parseInt(d3.select('#graph').style('width'), 10))
+    // .attr("height", height + margin.top + margin.bottom)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
     .attr("transform",
@@ -48,15 +50,55 @@
           .style("stroke", "#aaa");
     
       console.log("This is in draw; nodes: " + data.nodes);
+      // Gradient
+      var gradientData = new Array(2);
+      var defs = svg.append("defs");
+      var gradient = defs.append("linearGradient")
+        .attr("id", "svgGradient")
+        .attr("x1", "0%")
+        .attr("x2", "0%")
+        .attr("y1", "100%")
+        .attr("y2", "100%");
+
+      var stops = gradient.selectAll('stop')
+        .data(gradientData)
+        .enter()
+        .append('stop')
+        .attr('offset', "0%")//function(a, i) { return i * 0.04 + '%'; })
+        .attr('stop-color', getRandomColor())
+
+      function getRandomColor() {
+          var letters = '0123456789ABCDEF'.split('');
+          var color = '#';
+          for (var i = 0; i < 6; i++ ) {
+              color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+      }
+      function randomPercent () {
+        return Math.random() * 100 + '%';  
+      }
+      function dragged(d) {
+        d.x = d3.event.x, d.y = d3.event.y;
+        d3.select(this).attr("cx", d.x).attr("cy", d.y);
+        link.filter(function(l) { return l.source === d; }).attr("x1", d.x).attr("y1", d.y);
+        link.filter(function(l) { return l.target === d; }).attr("x2", d.x).attr("y2", d.y);
+        textElems.filter(function(l) { return l.text === d; }).attr("x", d.x).attr("y", d.y);
+      }
       // Initialize the nodes
       var node = svg
         .selectAll("circle")
         .data(data.nodes)
         .enter()
         .append("circle")
-          .attr("r", 30)
-          .style("fill", "#69b3a2")
-          .text("hello");
+          .attr("r", 50)
+          // .style("fill", "#69b3a2")
+          .style("fill", "url(#svgGradient)")
+          .text("hello")
+          .on("click", function(d) {
+              alert("on click " + d.id);
+          })
+          .call(d3.drag().on("drag", dragged));
 
       // Add names to all the nodes
       const textElems = svg.append('g')
@@ -64,10 +106,14 @@
         .data(data.nodes)
         .enter().append('text')
         .text(d => d.name)
-        .style("font-size", function(d) { return Math.min(2 * 23, (2 * 23 - 8) / this.getComputedTextLength() * 24) + "px"; })
+        .style("font-size", function(d) { return Math.min(3 * 23, (3 * 23 - 8) / this.getComputedTextLength() * 24) + "px"; })
         .attr("text-anchor", "middle")
         .attr("dominant-baseline", "central") 
-        .attr('font-size',8);
+        .attr('font-size',12)
+        .attr('fill',"#ffffff")
+        .on("click", function(d) {
+              alert("on click " + d.name);
+        });
         // .attr('dx', -14)//positions text towards the left of the center of the circle
         // .attr('dy',4);
     
@@ -78,7 +124,9 @@
                 .id(function(d) { return d.id; })                     // This provide  the id of a node
                 .links(data.links)                                    // and this the list of links
           )
-          .force("charge", d3.forceManyBody().strength(-2000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+          .force("charge", d3.forceManyBody().strength(-4000))         // This adds repulsion between nodes. Play with the -400 for the repulsion strength
+          .velocityDecay(0.4)
+          .alphaTarget(0.1)
           .on("tick", ticked);
     
       // This function is run at each iteration of the force algorithm, updating the nodes position.
@@ -96,9 +144,24 @@
         textElems
             .attr("x", function (d) { return d.x+6; })
             .attr("y", function(d) { return d.y-6; });
+        // d3.selectAll('stop')
+        //     .transition()
+        //     .ease(d3.easeElastic)
+        //     .duration(0)
+        //     // .attr('offset', "100%") 
+        //     .attr('stop-color', getRandomColor)
+        // d3.selectAll('linearGradient')
+        // .transition()
+        // .ease(d3.easeElastic)
+        // .duration(50000)
+        // .attr('x1', randomPercent)
+        // .attr('x2', randomPercent)
+        // .attr('y1', randomPercent)
+        // .attr('y2', randomPercent)
       };
     };
     draw();
+    console.log("Finished drawing?")
     d3.select("nav").select("form")
       .on("submit", function(){
         console.log(data.links.length)
@@ -126,8 +189,9 @@
           console.log(data.links);
           console.log(data.nodes);
         });
-        draw();
+        // draw();
       });
+      console.log("Finished drawing, for real?")
       
   });
   
