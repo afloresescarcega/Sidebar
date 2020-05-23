@@ -33,6 +33,10 @@ let l = ['1', '2', '3', '4']
 //   svg.append("circle")
 //     .attr("cx", 300).attr("cy", 100).attr("r", 40).style("fill", "green");
 
+function restart() {
+    node = node.data(nodes)
+}
+
 d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit=" + subredditQuery, function(data) {
     // var links = svg
     // .selectAll("line")
@@ -60,7 +64,29 @@ d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit=" + subredditQuery, fu
             .attr("cx", 100)
             .attr("cy", 100)
             .style("color", "#00")
-        ;
+            .on("click", function(d) {
+                console.log("I've been clicked on" + d.name);
+                draw(d.name);
+            })
+    ;
+
+    var draw = function(name){
+        console.log("Uh-oh")
+        d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit=" + name, function(_data) {
+            svg
+                .selectAll("circle")
+                .data(_data.nodes)
+                .enter()
+                .append("circle")
+                    .attr("r", 50)
+                    .style("fill", "#ff0000")
+                    .attr("cx", 100)
+                    .attr("cy", 100)
+                    .style("color", "#00")
+
+
+        });
+    }
     
     var labels = svg
         .selectAll("text")
