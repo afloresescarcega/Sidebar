@@ -146,7 +146,7 @@ d3.json("http://0.0.0.0/sidebar/api/v1.0/search?subreddit=" + subredditQuery, fu
             .attr("cx", function (d) { return d.x+6; })
             .attr("cy", function(d) { return d.y-6; });
         
-            labels
+        labels
             .attr("x", function (d) { return d.x+6; })
             .attr("y", function(d) { return d.y-6; });
 
