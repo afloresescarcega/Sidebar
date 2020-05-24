@@ -1,6 +1,8 @@
 
 var width = 960,
-height = 500;
+height = 960;
+
+var first_boot = true;
 
 let url_prefix = "http://0.0.0.0/sidebar/api/v1.0/search?subreddit=";
 let url = url_prefix + "movies";
@@ -13,18 +15,7 @@ var force = d3.layout.force()
     .charge(-1000)
     .on("tick", tick);
 
-var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 2, height / 2));
-
-simulation
-    .nodes(graph.nodes)
-    .on("tick", ticked);
-
-simulation.force("link")
-    .links(graph.links);
-
+    
 var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
@@ -63,17 +54,29 @@ function tick() {
     node.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 }
 
-function restart(_url = url) {
+function restart(_url = url, origin_name=null) {
     console.log("This is my url" + _url);
     console.log(nodes);
     console.log("links sane check " + links);
     
     d3.json(_url, (d) => {
         console.log("This is nodes so far before adding their names and ids " + nodes)
-        console.log("This is what d.nodes looks like " + d.nodes.length);
-        var origin_name =  d.nodes[d.nodes.length - 1].name;
+        console.log("This is what d.nodes looks like " + d.nodes);
+        if(origin_name == null){
+            var origin_name = d.nodes[d.nodes.length - 1].name;
+            if(first_boot){
+                nodeNameToID[origin_name] = 0;
+                first_boot = false;
+            }
+        } else {
+            var origin_name = origin_name
+        }
+        
         console.log("This is the origin: " + origin_name);
-        nodeNameToID[origin_name] = d.nodes.length - 1;
+        if(!(origin_name in nodeNameToID)){
+            nodes.push({"name": origin_name});
+            unique_id += 1;
+        }
         d.nodes.forEach((thisNode) => {
             console.log("\n\n"+thisNode.id + ": " + thisNode.name);
             if (thisNode.name in nodeNameToID) {
@@ -86,6 +89,7 @@ function restart(_url = url) {
                 console.log(thisNode.name + " originates from " + origin_name);
                 console.log(thisNode.name + " maps to id " + nodeNameToID[origin_name]);
                 if(thisNode.name != origin_name){
+                    console.log("These are supposed to be different " + thisNode.name + " and " + origin_name);
                     console.log("Pushing to links: " + nodeNameToID[origin_name] +", " + unique_id);
                     links.push({source: nodeNameToID[origin_name], target: unique_id});
                     console.log(links);
@@ -95,10 +99,6 @@ function restart(_url = url) {
                 unique_id += 1;
             }
         });
-        console.log(links);
-        links[0].source = nodeNameToID[origin_name];
-        links[0].target = 0;
-        console.log(links);
         var node = svg.selectAll(".node");
         var nodeEnter = node.data(nodes, function(d, i) { return d.name; }).enter()
             .append("g")
@@ -130,6 +130,7 @@ function restart(_url = url) {
         link.exit()
             .remove();
         force.start();
+        console.log(nodes);
     });
 
     
@@ -154,5 +155,5 @@ function mousedownNode(d, i) {
 
     d3.event.stopPropagation();
 
-    restart(url_prefix + d.name);
+    restart(url_prefix + d.name, d.name);
 }
