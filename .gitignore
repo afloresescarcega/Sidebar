@@ -6,3 +6,4 @@ reddit_username.txt
 node_modules/
 backend/reddit_token.txt
 backend/src/__pycache__/
+.DS_Store
