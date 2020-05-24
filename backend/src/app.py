@@ -63,7 +63,7 @@ def get_sidebar_subreddits():
         if k == 'data':
             sidebar_raw = v['description']
             print("Heheheh", sidebar_raw)
-    sidebars_list = [match.strip().lower() for match in re.findall("\/r\/([A-Za-z0-9][A-Za-z0-9_]{2,20})", sidebar_raw)]
+    sidebars_list = [match.strip().lower() for match in re.findall("r\/([A-Za-z0-9][A-Za-z0-9_]{2,21})", sidebar_raw)]
     print("This is the output of the regular expressions", sidebars_list)
     sidebars = list(set(sidebars_list))
 
