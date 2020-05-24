@@ -1,6 +1,6 @@
 
 var width = 960,
-height = 960;
+height = 500;
 
 var first_boot = true;
 
@@ -8,11 +8,13 @@ let url_prefix = "http://0.0.0.0/sidebar/api/v1.0/search?subreddit=";
 let url = url_prefix + "movies";
 
 
+var color = d3.scale.category20c();
+
 var force = d3.layout.force()
     .size([width, height])
     .nodes([]) // init empty
     .linkDistance(200)
-    .charge(-1000)
+    .charge(-6000)
     .on("tick", tick);
 
     
@@ -20,7 +22,11 @@ var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
     // .on("mousemove", mousemove)
-    .on("mousedown", mousedownCanvas);
+    .on("mousedown", mousedownCanvas)
+    .call(d3.behavior.zoom().on("zoom", function () {
+        svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+      }))
+      .append("g");
 
 
 var nodes = force.nodes(),
@@ -67,6 +73,8 @@ function restart(_url = url, origin_name=null) {
             if(first_boot){
                 nodeNameToID[origin_name] = 0;
                 first_boot = false;
+                nodes.push({"name": origin_name});
+                unique_id += 1;
             }
         } else {
             var origin_name = origin_name
@@ -106,15 +114,17 @@ function restart(_url = url, origin_name=null) {
                 .call(force.drag);
         var circlesEnter = nodeEnter
             .append("circle")
-                .attr("r", 30)
-                .style("fill", "rgb(12,240,233)" )
+                .attr("r", function(d) { return d.name.length * 3 + 30; })
+                .attr("fill", d => {return color(d.index);} )
                 .on("mousedown", mousedownNode);
             
         var textEnter = nodeEnter
             .append("text")
                 .attr("dx", 0)
                 .attr("dy", ".35em")
-                .text(function(d) { return d.name });
+                .style("text-anchor", "middle")
+                .text(function(d) { return d.name })
+                .on("mousedown", mousedownNode);;
 
         var link = svg.selectAll(".link");
 
