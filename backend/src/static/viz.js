@@ -11,22 +11,53 @@ let url = url_prefix + "movies";
 var color = d3.scale.category20c();
 
 var force = d3.layout.force()
-    .size([width, height])
+    // .size([width, height])
     .nodes([]) // init empty
     .linkDistance(200)
     .charge(-6000)
     .on("tick", tick);
 
-    
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    // .on("mousemove", mousemove)
-    .on("mousedown", mousedownCanvas)
-    .call(d3.behavior.zoom().on("zoom", function () {
-        svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-      }))
-      .append("g");
+function search(ele) {
+    if(event.key === 'Enter') {
+        console.log("restarting...");
+        force = d3.layout.force()
+            // .size([width, height])
+            .nodes([]) // init empty
+            .linkDistance(200)
+            .charge(-6000)
+            .on("tick", tick)
+        nodes = force.nodes();
+        links = force.links();
+        node = svg.selectAll(".node");
+        link = svg.selectAll(".link");
+
+        first_boot = true;
+
+        nodeNameToID = {};
+        unique_id = 0;
+        url = url_prefix + ele.value;
+        restart(url);
+        svg.selectAll("*").remove();
+    }
+    console.log("Nodes after restart: " +links.length);
+}
+        
+var svg = d3.select("body")
+    .append("div")
+        .classed("svg-container", true)
+    .append("svg")
+        // .attr("width", width)
+        // .attr("height", height)
+        // .on("mousemove", mousemove)
+        .on("mousedown", mousedownCanvas)
+        .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 600 400")
+        //class to make it responsive
+        .classed("svg-content-responsive", true)
+        .call(d3.behavior.zoom().on("zoom", function () {
+            svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
+        }))
+        .append("g");
 
 
 var nodes = force.nodes(),
@@ -146,14 +177,14 @@ function restart(_url = url, origin_name=null) {
     
 }
 
-function mousemove() {
-    cursor.attr("transform", "translate(" + d3.mouse(this) + ")");
-}
+// function mousemove() {
+//     cursor.attr("transform", "translate(" + d3.mouse(this) + ")");
+// }
 function mousedownCanvas() {
     // var point = d3.mouse(this),
     //     node = {x:point[0], y:point[1]},
     //     n = nodes.push(node);
-
+    console.log("clicking canvas");
     restart();
 }
 
