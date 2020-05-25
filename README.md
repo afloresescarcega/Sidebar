@@ -1,5 +1,8 @@
 # Sidebar
+
 Explore subreddits that are mentioned in a sidebar of another subreddit.
+http://www.afescar.com/sidebar
+
 ![Demo](https://github.com/afloresescarcega/Sidebar/blob/master/meta_repo_resources/Using_Sidebar_May25_2020.gif)
 ## Setting up
 - [ ] Have a reddit account 
