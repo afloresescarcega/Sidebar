@@ -15,8 +15,7 @@ Explore subreddits that are mentioned in a sidebar of another subreddit.
 - [ ] Make sure these four files are `.gitignore`
 - [ ] bash`cd backend`
 - [ ] bash`pip3 install -r requirements.txt`
-- [ ] bash`cd src` because app.py uses relative filenames
-- [ ] bash`python3 app.py`
+- [ ] bash`python3 src/app.py`
 
 Open up 
 http://0.0.0.0/sidebar/
