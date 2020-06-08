@@ -4,7 +4,7 @@ height = 500;
 
 var first_boot = true;
 
-let url_prefix = "http://0.0.0.0/sidebar/api/v1.0/search?subreddit=";
+let url_prefix = "http://afescar.com/sidebar/api/v1.0/search?subreddit=";
 let url = url_prefix + "movies";
 
 
