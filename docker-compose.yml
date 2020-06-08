@@ -1,0 +1,6 @@
+backend:
+    build: ./backend
+    ports:
+     - "80:80"
+    volumes:
+     - .:/src

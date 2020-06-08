@@ -34,3 +34,8 @@ rect {
   /* top: 10px; */
   left: 0;
 }
+
+text {
+  font-family: Roboto;
+  font-weight: bold;
+}

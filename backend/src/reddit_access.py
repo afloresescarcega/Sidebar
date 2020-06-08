@@ -13,20 +13,20 @@ import requests
 
 class Reddit_access:
     def __init__(self):
-        self.TOKEN_PATH = "../reddit_token.txt"
+        self.TOKEN_PATH = "reddit_token.txt"
 
     def get_new_token(self):
         # Let there be this file in backend/ with the app token 
         # https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started
-        with open("../reddit_client_id.txt") as f:
+        with open("reddit_client_id.txt") as f:
             REDDIT_CLIENT_ID = f.read().strip()
         # Let there be this file in backend/ with the app secret
         # https://github.com/reddit-archive/reddit/wiki/OAuth2#getting-started
-        with open("../reddit_secret.txt") as f:
+        with open("reddit_secret.txt") as f:
             REDDIT_SECRET = f.read().strip()
-        with open("../reddit_username.txt") as f:
+        with open("reddit_username.txt") as f:
             REDDIT_USERNAME = f.read().strip()
-        with open("../reddit_username_password.txt") as f:
+        with open("reddit_username_password.txt") as f:
             REDDIT_USERNAME_PASSWORD = f.read().strip()
 
         if not REDDIT_CLIENT_ID or not REDDIT_SECRET or not REDDIT_USERNAME or not REDDIT_USERNAME_PASSWORD:
