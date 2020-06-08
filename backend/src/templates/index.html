@@ -12,11 +12,13 @@
 
 <title>{% block title %}{% endblock %} - Sidebar</title>
 <head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet'>
+
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
+  <meta name="viewport" content="width=device-width, user-scalable=no">
 </head>
-<nav><nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
   <a class="navbar-brand" href="#">Sidebar</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -37,7 +39,7 @@
     </div>
   </div>
 </nav>
-</nav>
+
 <body>
   
 </body>

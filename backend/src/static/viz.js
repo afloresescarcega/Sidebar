@@ -41,17 +41,15 @@ function search(ele) {
     }
     console.log("Nodes after restart: " +links.length);
 }
-        
+
 var svg = d3.select("body")
-    .append("div")
-        .classed("svg-container", true)
+    // .append("div")
+    //     .classed("svg-container", true)
     .append("svg")
-        // .attr("width", width)
-        // .attr("height", height)
         // .on("mousemove", mousemove)
         .on("mousedown", mousedownCanvas)
-        .attr("preserveAspectRatio", "xMinYMin meet")
-        .attr("viewBox", "0 0 600 400")
+        // .attr("preserveAspectRatio", "xMinYMin meet")
+        .attr("viewBox", "0 0 " + window.innerWidth + " " + window.innerHeight)
         //class to make it responsive
         .classed("svg-content-responsive", true)
         .call(d3.behavior.zoom().on("zoom", function () {
@@ -145,8 +143,8 @@ function restart(_url = url, origin_name=null) {
                 .call(force.drag);
         var circlesEnter = nodeEnter
             .append("circle")
-                .attr("r", function(d) { return d.name.length * 3 + 30; })
-                .attr("fill", d => {return color(d.index);} )
+                .attr("r", function(d, i) { return d.name.length * 3 + 30; })
+                .attr("fill", (d, i) => {console.log("This is my id for color: " + i); return color(i);} )
                 .on("mousedown", mousedownNode);
             
         var textEnter = nodeEnter
@@ -154,6 +152,7 @@ function restart(_url = url, origin_name=null) {
                 .attr("dx", 0)
                 .attr("dy", ".35em")
                 .style("text-anchor", "middle")
+                .style("font-family", "Roboto")
                 .text(function(d) { return d.name })
                 .on("mousedown", mousedownNode);;
 
