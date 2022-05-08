@@ -21,7 +21,7 @@ http://www.afescar.com/sidebar
 - [ ] bash`python3 src/app.py`
 
 Open up 
-http://0.0.0.0/sidebar/
+http://0.0.0.0/sidebar
 
 
 
@@ -30,4 +30,4 @@ http://0.0.0.0/sidebar/
 ## Usage
 
 Follow "Setting up", then use API end point "http://0.0.0.0/sidebar/api/v1.0/search?subreddit=SUBREDDIT_NAME_HERE"
-Follow "Setting up", then use "http://0.0.0.0/sidebar/" for web
+Follow "Setting up", then use "http://0.0.0.0/sidebar" for web
